@@ -30,7 +30,8 @@ class ScheduleController extends Controller
             'difficulty'      => 'required|in:easy,medium,hard',
         ]);
 
-        Task::create($validated);
+        $task = Task::create($validated);
+
 
         return redirect()->back()->with('success', 'Tugas berhasil ditambahkan!');
     }

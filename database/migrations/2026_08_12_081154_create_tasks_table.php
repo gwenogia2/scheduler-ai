@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('task_name');
             $table->dateTime('deadline');
-            $table->integer('estimated_hour');
+            $table->integer('estimated_hours');
             $table->enum('difficulty', ['easy', 'medium', 'hard'])->default('medium');
             $table->enum('status', ['pending', 'completed'])->default('pending');
             $table->timestamps();
