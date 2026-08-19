@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Agents\ScheduleAgent;
 use App\Models\Schedule;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Laravel\AI\Facades\AI;
 
 class ScheduleController extends Controller
 {
@@ -30,7 +30,8 @@ class ScheduleController extends Controller
             'difficulty'      => 'required|in:easy,medium,hard',
         ]);
 
-        Task::create($validated);
+        $task = Task::create($validated);
+
 
         return redirect()->back()->with('success', 'Tugas berhasil ditambahkan!');
     }
@@ -55,11 +56,29 @@ class ScheduleController extends Controller
             ];
         })->toJson();
 
-        try {
-            $agent = new ScheduleAgent($tasksPayload);
-            $response = $agent->prompt('Buatkan rekomendasi jadwal.');
+        $prompt = "Kamu adalah sistem penjadwalan cerdas untuk mahasiswa.
+Diberikan daftar tugas aktif berikut dalam format JSON:
+{$tasksPayload}
 
-            $cleanJson = preg_replace('/^```(?:json)?\s*|\s*```$/i', '', trim((string) $response));
+Tugasmu:
+1. Buatkan rekomendasi alokasi waktu belajar harian (time-blocking) secara fleksibel dan realistis.
+2. Batasi waktu belajar maksimal 6 jam per hari agar mahasiswa tidak mengalami burnout.
+3. Utamakan tugas dengan deadline lebih dekat dan tingkat kesulitan lebih tinggi ('hard').
+
+Keluarkan output HANYA berupa JSON array valid tanpa format Markdown/Code Block, dengan skema persis berikut:
+[
+  {
+    \"task_id\": 1,
+    \"scheduled_date\": \"YYYY-MM-DD\",
+    \"time_slot\": \"HH:MM - HH:MM\",
+    \"recommendation_note\": \"Alasan singkat penempatan jadwal ini\"
+  }
+]";
+
+        try {
+            $response = AI::prompt($prompt);
+
+            $cleanJson = preg_replace('/^```(?:json)?\s*|\s*```$/i', '', trim($response));
             $schedulesData = json_decode($cleanJson, true);
 
             if (json_last_error() !== JSON_ERROR_NONE || !is_array($schedulesData)) {
