@@ -14,5 +14,3 @@ Mahasiswa sering kali kesulitan membagi waktu antara jadwal kuliah, penumpukan t
 * **Testing:** PHPUnit
 * **Frontend:** Blade Templating & Tailwind CSS
 
-##
-izin nyoba forking & cloning websitemu jen anjayyyy

@@ -6,7 +6,7 @@ use App\Models\Schedule;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Laravel\AI\Facades\AI;
+use Laravel\Ai\Facades\Ai;
 
 class ScheduleController extends Controller
 {
@@ -76,8 +76,7 @@ Keluarkan output HANYA berupa JSON array valid tanpa format Markdown/Code Block,
 ]";
 
         try {
-            $response = AI::prompt($prompt);
-
+            $response = Ai::prompt($prompt);
             $cleanJson = preg_replace('/^```(?:json)?\s*|\s*```$/i', '', trim($response));
             $schedulesData = json_decode($cleanJson, true);
 
